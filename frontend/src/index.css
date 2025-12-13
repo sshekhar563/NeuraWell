@@ -8,13 +8,17 @@
     font-family: Outfit;
 }
 
+body {
+    @apply bg-black text-white;
+}
+
 .active hr {
     @apply block
 }
 
 @media (max-width:740px) {
     .active  p{
-       @apply text-white bg-primary
+       @apply text-black bg-primary
     }
 }
 
