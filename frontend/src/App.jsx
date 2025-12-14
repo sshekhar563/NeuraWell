@@ -13,6 +13,14 @@ import Footer from './components/Footer'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Verify from './pages/Verify'
+import MentalHealthDashboard from './pages/MentalHealthDashboard'
+import AITherapist from './pages/AITherapist'
+import MentalHealthAssessment from './pages/MentalHealthAssessment'
+import MoodTracker from './pages/MoodTracker'
+import CrisisSupport from './pages/CrisisSupport'
+import MentalHealthResources from './pages/MentalHealthResources'
+import AdvancedAI from './pages/AdvancedAI'
+import AutonomousAIDashboard from './pages/AutonomousAIDashboard'
 
 const App = () => {
   return (
@@ -30,6 +38,14 @@ const App = () => {
         <Route path='/my-appointments' element={<MyAppointments />} />
         <Route path='/my-profile' element={<MyProfile />} />
         <Route path='/verify' element={<Verify />} />
+        <Route path='/mental-health' element={<MentalHealthDashboard />} />
+        <Route path='/ai-therapist' element={<AITherapist />} />
+        <Route path='/mental-health-assessment' element={<MentalHealthAssessment />} />
+        <Route path='/mood-tracker' element={<MoodTracker />} />
+        <Route path='/crisis-support' element={<CrisisSupport />} />
+        <Route path='/mental-health-resources' element={<MentalHealthResources />} />
+        <Route path='/advanced-ai' element={<AdvancedAI />} />
+        <Route path='/autonomous-ai' element={<AutonomousAIDashboard />} />
       </Routes>
       <Footer />
     </div>

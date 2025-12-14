@@ -37,6 +37,14 @@ const Navbar = () => {
           <li className='py-1'>CONTACT</li>
           <hr className='border-none outline-none h-0.5 bg-primary w-3/5 m-auto hidden' />
         </NavLink>
+        <NavLink to='/mental-health' >
+          <li className='py-1'>MENTAL HEALTH</li>
+          <hr className='border-none outline-none h-0.5 bg-primary w-3/5 m-auto hidden' />
+        </NavLink>
+        <NavLink to='/autonomous-ai' >
+          <li className='py-1'>ADVANCED AI</li>
+          <hr className='border-none outline-none h-0.5 bg-primary w-3/5 m-auto hidden' />
+        </NavLink>
       </ul>
 
       <div className='flex items-center gap-4 '>
@@ -68,6 +76,8 @@ const Navbar = () => {
             <NavLink onClick={() => setShowMenu(false)} to='/doctors' ><p className='px-4 py-2 rounded full inline-block'>ALL DOCTORS</p></NavLink>
             <NavLink onClick={() => setShowMenu(false)} to='/about' ><p className='px-4 py-2 rounded full inline-block'>ABOUT</p></NavLink>
             <NavLink onClick={() => setShowMenu(false)} to='/contact' ><p className='px-4 py-2 rounded full inline-block'>CONTACT</p></NavLink>
+            <NavLink onClick={() => setShowMenu(false)} to='/mental-health' ><p className='px-4 py-2 rounded full inline-block'>MENTAL HEALTH</p></NavLink>
+            <NavLink onClick={() => setShowMenu(false)} to='/autonomous-ai' ><p className='px-4 py-2 rounded full inline-block'>ADVANCED AI</p></NavLink>
           </ul>
         </div>
       </div>
