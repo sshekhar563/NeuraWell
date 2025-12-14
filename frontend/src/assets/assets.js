@@ -83,6 +83,10 @@ export const specialityData = [
         speciality: 'Gastroenterologist',
         image: Gastroenterologist
     },
+    {
+        speciality: 'Psychiatrist',
+        image: Neurologist // Using Neurologist icon as placeholder for Psychiatrist
+    },
 ]
 
 export const doctors = [
