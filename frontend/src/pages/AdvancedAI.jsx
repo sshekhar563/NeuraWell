@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
+import aiService from '../services/aiService'
 
 const AdvancedAI = () => {
   const [messages, setMessages] = useState([])
@@ -22,24 +23,71 @@ const AdvancedAI = () => {
   const [showThoughts, setShowThoughts] = useState(false)
   const messagesEndRef = useRef(null)
 
-  // Initialize AI with welcome message
+  // Initialize AI with welcome message and connect to Python service
   useEffect(() => {
     const initMessage = {
       id: 1,
-      text: "Hello! I'm NeuraWell Advanced AI - an autonomous learning agent. I can think, learn, and adapt based on our conversations. I'm constantly analyzing patterns, forming insights, and evolving my understanding. How can I assist you today?",
+      text: "Hello! I'm NeuraWell Advanced AI - powered by Python ML algorithms. I can think, learn, and adapt autonomously using advanced neural networks. I'm constantly analyzing patterns, forming insights, and evolving my understanding. How can I assist you today?",
       sender: 'ai',
       timestamp: new Date().toLocaleTimeString(),
       confidence: 0.95,
-      reasoning: "Initial greeting with capability explanation"
+      reasoning: "Initial greeting with Python AI capabilities"
     }
     setMessages([initMessage])
+    
+    // Check if Python AI service is available
+    checkAIService()
     
     // Load saved AI memory
     const savedMemory = localStorage.getItem('neurawell-ai-memory')
     if (savedMemory) {
       setAiMemory(JSON.parse(savedMemory))
     }
+
+    // Connect WebSocket for real-time communication
+    const userId = 'user_' + Date.now()
+    aiService.connectWebSocket(
+      userId,
+      handleAIResponse,
+      handleAIThoughts
+    )
+
+    return () => {
+      aiService.disconnectWebSocket()
+    }
   }, [])
+
+  const checkAIService = async () => {
+    try {
+      const status = await aiService.getStatus()
+      console.log('Python AI Service connected:', status)
+    } catch (error) {
+      console.warn('Python AI Service not available, using fallback')
+    }
+  }
+
+  const handleAIResponse = (response) => {
+    const aiMessage = {
+      id: messages.length + 1,
+      text: response.text,
+      sender: 'ai',
+      timestamp: new Date().toLocaleTimeString(),
+      confidence: response.confidence,
+      reasoning: response.reasoning,
+      emotion_detected: response.emotion_detected,
+      patterns_identified: response.patterns_identified
+    }
+    setMessages(prev => [...prev, aiMessage])
+    setIsThinking(false)
+  }
+
+  const handleAIThoughts = (thoughts) => {
+    setAiThoughts(thoughts.map(thought => ({
+      type: thought.type,
+      content: thought.content,
+      timestamp: Date.now()
+    })))
+  }
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -258,34 +306,52 @@ const AdvancedAI = () => {
     }
 
     setMessages(prev => [...prev, userMessage])
+    const messageText = inputMessage
     setInputMessage('')
     setIsThinking(true)
 
-    // AI thinking process
-    const thoughts = aiThinkingProcess(inputMessage, aiMemory)
-    setAiThoughts(thoughts)
-
-    // Simulate thinking time
-    setTimeout(() => {
-      const aiResponse = generateAdvancedResponse(inputMessage, thoughts, aiMemory)
+    try {
+      // Try Python AI service first
+      const userId = 'user_' + Date.now()
       
-      const aiMessage = {
-        id: messages.length + 2,
-        text: aiResponse.response,
-        sender: 'ai',
-        timestamp: new Date().toLocaleTimeString(),
-        confidence: aiResponse.confidence,
-        reasoning: aiResponse.reasoning
+      if (aiService.isConnected) {
+        // Use WebSocket for real-time communication
+        aiService.sendWebSocketMessage(messageText, true)
+      } else {
+        // Use HTTP API as fallback
+        const response = await aiService.chatWithAI(messageText, userId, {
+          conversation_history: aiMemory.conversationHistory,
+          emotional_context: aiMemory.emotionalContext
+        })
+        
+        handleAIResponse(response)
       }
+    } catch (error) {
+      console.warn('Python AI service failed, using fallback:', error)
+      
+      // Fallback to original JavaScript implementation
+      const thoughts = aiThinkingProcess(messageText, aiMemory)
+      setAiThoughts(thoughts)
 
-      setMessages(prev => [...prev, aiMessage])
-      setAiMemory(aiResponse.updatedMemory)
-      
-      // Save memory to localStorage
-      localStorage.setItem('neurawell-ai-memory', JSON.stringify(aiResponse.updatedMemory))
-      
-      setIsThinking(false)
-    }, 2000)
+      setTimeout(() => {
+        const aiResponse = generateAdvancedResponse(messageText, thoughts, aiMemory)
+        
+        const aiMessage = {
+          id: messages.length + 2,
+          text: aiResponse.response,
+          sender: 'ai',
+          timestamp: new Date().toLocaleTimeString(),
+          confidence: aiResponse.confidence,
+          reasoning: aiResponse.reasoning
+        }
+
+        setMessages(prev => [...prev, aiMessage])
+        setAiMemory(aiResponse.updatedMemory)
+        
+        localStorage.setItem('neurawell-ai-memory', JSON.stringify(aiResponse.updatedMemory))
+        setIsThinking(false)
+      }, 2000)
+    }
   }
 
   const handleKeyPress = (e) => {
